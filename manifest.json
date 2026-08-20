@@ -1,0 +1,13 @@
+{
+  "name": "splitforge",
+  "category": "ML",
+  "architecture": "statistical engine with model-view separation",
+  "interface": "notebook walkthrough + task-runner \u2014 python walkthrough.py",
+  "testing": "Monte-Carlo calibration (FPR/coverage)",
+  "demo_cmd": "python walkthrough.py",
+  "test_cmd": "python -m pytest tests -q",
+  "entry_points": [
+    "walkthrough.py",
+    "tasks.py"
+  ]
+}
