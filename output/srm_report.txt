@@ -1,0 +1,132 @@
+================================================================================================
+EXPERIMENT: srm   |   100,000 users   |   alpha=0.05, practical MDE=2.0%
+================================================================================================
+
+[1] SAMPLE RATIO MISMATCH GUARD
+| arm       |   observed |   expected |   delta |   observed share |   designed share |
+|-----------|------------|------------|---------|------------------|------------------|
+| control   |      48608 |      50000 |   -1392 |           0.4861 |              0.5 |
+| treatment |      51392 |      50000 |    1392 |           0.5139 |              0.5 |
+SRM check FAILED (chi2=77.51, dof=1, p=1.323e-18 < 0.001); the 'control' arm is off its designed share - randomisation is suspect
+
+[2] FREQUENTIST TESTS
+| metric                   |   control |   treatment |   abs lift | abs 95% CI            | rel lift   | rel 95% CI        |   stat |        p | sig   |
+|--------------------------|-----------|-------------|------------|-----------------------|------------|-------------------|--------|----------|-------|
+| conversion               |   0.13763 |     0.15002 |    0.01239 | [+0.008043, +0.01674] | +9.00%     | [+5.75%, +12.36%] |  5.578 | 2.43e-08 | YES   |
+| revenue_per_user         |   1.8406  |     2.0846  |    0.2441  | [+0.1546, +0.3335]    | +13.26%    | [+8.20%, +18.55%] |  5.347 | 8.98e-08 | YES   |
+| revenue_per_user (CUPED) |   1.8429  |     2.0824  |    0.2395  | [+0.1612, +0.3179]    | +13.00%    | [+8.56%, +17.61%] |  5.992 | 2.08e-09 | YES   |
+
+[3] BAYESIAN POSTERIOR - conversion
+| posterior quantity                 | value                         |
+|------------------------------------|-------------------------------|
+| metric                             | conversion                    |
+| model                              | rate / Beta(1,1)              |
+| posterior mean (control)           | 0.137647                      |
+| posterior mean (treatment)         | 0.150037                      |
+| P(treatment > control)             | 100.00%                       |
+| 95% credible interval (abs lift)   | [+0.0080406, +0.016739]       |
+| 95% credible interval (rel lift)   | [+5.75%, +12.36%]             |
+| expected loss if we SHIP treatment | 4.51e-12 (0.0000% of control) |
+| expected loss if we KEEP control   | 0.0124                        |
+
+[3b] BAYESIAN POSTERIOR - revenue per user
+| posterior quantity                 | value                                         |
+|------------------------------------|-----------------------------------------------|
+| metric                             | revenue_per_user                              |
+| model                              | continuous / flat on the mean (CLT posterior) |
+| posterior mean (control)           | 1.84057                                       |
+| posterior mean (treatment)         | 2.08462                                       |
+| P(treatment > control)             | 100.00%                                       |
+| 95% credible interval (abs lift)   | [+0.15459, +0.33351]                          |
+| 95% credible interval (rel lift)   | [+8.21%, +18.56%]                             |
+| expected loss if we SHIP treatment | 3.59e-10 (0.0000% of control)                 |
+| expected loss if we KEEP control   | 0.244                                         |
+
+[4] CUPED VARIANCE REDUCTION
+| CUPED diagnostic                 | value                                             |
+|----------------------------------|---------------------------------------------------|
+| theta = Cov(Y,X)/Var(X)          | 0.399183                                          |
+| corr(Y, X)                       | 0.4833                                            |
+| Var(Y) raw                       | 52.3171                                           |
+| Var(Y) after CUPED               | 40.0992                                           |
+| variance reduction               | 23.35%                                            |
+| effective sample-size multiplier | 1.305x                                            |
+| SE of lift, raw                  | 0.0456452                                         |
+| SE of lift, CUPED                | 0.0399768                                         |
+| SE shrink factor                 | 0.8758                                            |
+| p-value raw -> CUPED             | 8.976e-08 -> 2.08e-09                             |
+| pre-period covariate balance p   | 0.8383 (>0.01 expected: X must not differ by arm) |
+
+[5] SEQUENTIAL MONITORING (daily interim looks)
+|   look |   n/arm |   info |     z |   naive p |   OBF z-bound | OBF   |   always-valid p | mSPRT   |
+|--------|---------|--------|-------|-----------|---------------|-------|------------------|---------|
+|      1 |    7059 |   0.07 | 1.031 |    0.3024 |         7.377 |       |           1      |         |
+|      2 |   14064 |   0.14 | 1.468 |    0.1422 |         5.226 |       |           1      |         |
+|      3 |   21333 |   0.21 | 2.198 |    0.0279 |         4.244 |       |           0.3573 |         |
+|      4 |   28394 |   0.28 | 2.403 |    0.0163 |         3.678 |       |           0.25   |         |
+|      5 |   35461 |   0.35 | 3.388 |    0.0007 |         3.311 | cross |           0.0184 | cross   |
+|      6 |   42628 |   0.43 | 3.97  |    0.0001 |         3.038 | cross |           0.0025 | cross   |
+|      7 |   49870 |   0.5  | 4.213 |    0      |         2.842 | cross |           0.001  | cross   |
+|      8 |   57153 |   0.57 | 4.365 |    0      |         2.67  | cross |           0.0005 | cross   |
+|      9 |   64365 |   0.64 | 4.269 |    0      |         2.545 | cross |           0.0005 | cross   |
+|     10 |   71419 |   0.71 | 4.271 |    0      |         2.444 | cross |           0.0005 | cross   |
+|     11 |   78525 |   0.79 | 4.847 |    0      |         2.343 | cross |           0.0001 | cross   |
+|     12 |   85687 |   0.86 | 4.822 |    0      |         2.269 | cross |           0.0001 | cross   |
+|     13 |   92818 |   0.93 | 4.791 |    0      |         2.204 | cross |           0.0001 | cross   |
+|     14 |  100000 |   1    | 5.578 |    0      |         2.135 | cross |           0      | cross   |
+mixture-SPRT mixing scale tau=0.01440 (absolute rate units)
+first crossing -> naive: look 3 | OBF: look 5 | mSPRT: look 5
+
+[6] POWER / PLANNING
+| planning input / output    | value                   |
+|----------------------------|-------------------------|
+| metric                     | conversion (proportion) |
+| baseline                   | 0.137632                |
+| MDE (relative)             | 3.00%                   |
+| MDE (absolute)             | 0.00412895              |
+| alpha / power              | 0.05 / 0.8              |
+| allocation (treat:control) | 1:1                     |
+| variance reduction assumed | 0.0%                    |
+| n per control arm          | 110,658                 |
+| n per treatment arm        | 110,658                 |
+| n total                    | 221,316                 |
+| daily eligible traffic     | 7,143                   |
+| days required              | 31.0                    |
+MDE at the realised sample size (48,608 per arm): 4.54% relative (0.00625 absolute)
+Power against the observed lift: 100.0% raw, 100.0% with the measured CUPED reduction
+
+[7] HETEROGENEOUS TREATMENT EFFECTS (BH FDR q=0.1, 13 hypotheses)
+| dim     | level     |      n |   rate C |   rate T |   abs lift | rel lift   |   lift outside |   inter z |   inter p |   BH p | discovery   |
+|---------|-----------|--------|----------|----------|------------|------------|----------------|-----------|-----------|--------|-------------|
+| device  | mobile    | 60,210 |   0.1252 |   0.1421 |     0.0169 | +13.49%    |         0.0054 |      2.5  |   0.01253 | 0.1438 | no          |
+| tenure  | loyal     | 19,947 |   0.1864 |   0.2101 |     0.0237 | +12.70%    |         0.0097 |      2.29 |   0.02213 | 0.1438 | no          |
+| device  | desktop   | 29,754 |   0.163  |   0.1695 |     0.0065 | +3.98%     |         0.015  |     -1.69 |   0.09116 | 0.395  | no          |
+| device  | tablet    | 10,036 |   0.1369 |   0.1402 |     0.0033 | +2.43%     |         0.0134 |     -1.39 |   0.1657  | 0.5384 | no          |
+| tenure  | new       | 40,259 |   0.1059 |   0.1154 |     0.0096 | +9.03%     |         0.0142 |     -1.06 |   0.2879  | 0.6796 | no          |
+| tenure  | returning | 39,794 |   0.1453 |   0.1549 |     0.0096 | +6.61%     |         0.0142 |     -1.01 |   0.3137  | 0.6796 | no          |
+| channel | paid      | 34,781 |   0.1221 |   0.1369 |     0.0148 | +12.12%    |         0.0113 |      0.77 |   0.4397  | 0.8166 | no          |
+| channel | organic   | 45,312 |   0.1476 |   0.1586 |     0.011  | +7.43%     |         0.0137 |     -0.61 |   0.5403  | 0.8673 | no          |
+| country | UK        | 19,905 |   0.1364 |   0.1512 |     0.0147 | +10.79%    |         0.0118 |      0.52 |   0.6004  | 0.8673 | no          |
+| country | US        | 49,959 |   0.1474 |   0.1595 |     0.0121 | +8.21%     |         0.0128 |     -0.15 |   0.8786  | 0.9295 | no          |
+| country | DE        | 20,199 |   0.1307 |   0.1424 |     0.0117 | +8.97%     |         0.0125 |     -0.15 |   0.8823  | 0.9295 | no          |
+| country | IN        |  9,937 |   0.1043 |   0.116  |     0.0116 | +11.14%    |         0.0126 |     -0.15 |   0.8838  | 0.9295 | no          |
+uncorrected significant: 2 | survive Benjamini-Hochberg: 0
+
+[8] DECISION
+RECOMMENDATION: BLOCKED - SRM
+  Sample-ratio mismatch: the realised split is 0.4861 for 'control' against a designed 0.5000.
+
+Why:
+  - SRM check FAILED (chi2=77.51, dof=1, p=1.323e-18 < 0.001); the 'control' arm is off its designed share - randomisation is suspect
+  - The arms are no longer exchangeable, so every lift estimate below is confounded by whatever broke the assignment.
+  - Fix the bucketing/logging defect and rerun; do not read the metrics.
+
+Caveats:
+  - No conclusion about the feature can be drawn from this run.
+
+Plain English:
+  Stop here. The traffic split is broken, so the 100,000 users in this run are not a fair
+  comparison and no number below can be trusted. Nothing about the feature has been learned
+  yet; fix the assignment defect, verify the split on a fresh A/A run, and repeat the
+  experiment.
+================================================================================================

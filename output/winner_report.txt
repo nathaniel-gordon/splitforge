@@ -1,0 +1,140 @@
+================================================================================================
+EXPERIMENT: winner   |   100,000 users   |   alpha=0.05, practical MDE=2.0%
+================================================================================================
+
+[1] SAMPLE RATIO MISMATCH GUARD
+| arm       |   observed |   expected |   delta |   observed share |   designed share |
+|-----------|------------|------------|---------|------------------|------------------|
+| control   |      50112 |      50000 |     112 |           0.5011 |              0.5 |
+| treatment |      49888 |      50000 |    -112 |           0.4989 |              0.5 |
+SRM check PASSED (chi2=0.50, dof=1, p=0.4787 >= 0.001)
+
+[2] FREQUENTIST TESTS
+| metric                   |   control |   treatment |   abs lift | abs 95% CI           | rel lift   | rel 95% CI        |   stat |        p | sig   |
+|--------------------------|-----------|-------------|------------|----------------------|------------|-------------------|--------|----------|-------|
+| conversion               |   0.13767 |     0.14843 |    0.01076 | [+0.006421, +0.0151] | +7.82%     | [+4.59%, +11.14%] |  4.86  | 1.18e-06 | YES   |
+| revenue_per_user         |   1.8368  |     2.087   |    0.2502  | [+0.1603, +0.3401]   | +13.62%    | [+8.54%, +18.95%] |  5.456 | 4.89e-08 | YES   |
+| revenue_per_user (CUPED) |   1.8425  |     2.0812  |    0.2387  | [+0.16, +0.3174]     | +12.96%    | [+8.52%, +17.58%] |  5.948 | 2.73e-09 | YES   |
+
+[3] BAYESIAN POSTERIOR - conversion
+| posterior quantity                 | value                         |
+|------------------------------------|-------------------------------|
+| metric                             | conversion                    |
+| model                              | rate / Beta(1,1)              |
+| posterior mean (control)           | 0.137686                      |
+| posterior mean (treatment)         | 0.148447                      |
+| P(treatment > control)             | 100.00%                       |
+| 95% credible interval (abs lift)   | [+0.0064208, +0.015101]       |
+| 95% credible interval (rel lift)   | [+4.59%, +11.14%]             |
+| expected loss if we SHIP treatment | 2.49e-10 (0.0000% of control) |
+| expected loss if we KEEP control   | 0.0108                        |
+
+[3b] BAYESIAN POSTERIOR - revenue per user
+| posterior quantity                 | value                                         |
+|------------------------------------|-----------------------------------------------|
+| metric                             | revenue_per_user                              |
+| model                              | continuous / flat on the mean (CLT posterior) |
+| posterior mean (control)           | 1.83677                                       |
+| posterior mean (treatment)         | 2.087                                         |
+| P(treatment > control)             | 100.00%                                       |
+| 95% credible interval (abs lift)   | [+0.16034, +0.34012]                          |
+| 95% credible interval (rel lift)   | [+8.54%, +18.95%]                             |
+| expected loss if we SHIP treatment | 1.93e-10 (0.0000% of control)                 |
+| expected loss if we KEEP control   | 0.25                                          |
+
+[4] CUPED VARIANCE REDUCTION
+| CUPED diagnostic                 | value                                             |
+|----------------------------------|---------------------------------------------------|
+| theta = Cov(Y,X)/Var(X)          | 0.400782                                          |
+| corr(Y, X)                       | 0.4840                                            |
+| Var(Y) raw                       | 52.5822                                           |
+| Var(Y) after CUPED               | 40.2662                                           |
+| variance reduction               | 23.42%                                            |
+| effective sample-size multiplier | 1.306x                                            |
+| SE of lift, raw                  | 0.0458657                                         |
+| SE of lift, CUPED                | 0.0401338                                         |
+| SE shrink factor                 | 0.8750                                            |
+| p-value raw -> CUPED             | 4.889e-08 -> 2.725e-09                            |
+| pre-period covariate balance p   | 0.6038 (>0.01 expected: X must not differ by arm) |
+
+[5] SEQUENTIAL MONITORING (daily interim looks)
+|   look |   n/arm |   info |     z |   naive p |   OBF z-bound | OBF   |   always-valid p | mSPRT   |
+|--------|---------|--------|-------|-----------|---------------|-------|------------------|---------|
+|      1 |    7059 |   0.07 | 0.528 |    0.5973 |         7.377 |       |           1      |         |
+|      2 |   14064 |   0.14 | 1.256 |    0.2091 |         5.226 |       |           1      |         |
+|      3 |   21333 |   0.21 | 1.942 |    0.0522 |         4.244 |       |           0.5742 |         |
+|      4 |   28394 |   0.28 | 2.193 |    0.0283 |         3.678 |       |           0.3891 |         |
+|      5 |   35461 |   0.35 | 3.057 |    0.0022 |         3.311 |       |           0.0498 | cross   |
+|      6 |   42628 |   0.43 | 3.557 |    0.0004 |         3.038 | cross |           0.0109 | cross   |
+|      7 |   49870 |   0.5  | 3.778 |    0.0002 |         2.842 | cross |           0.0051 | cross   |
+|      8 |   57153 |   0.57 | 3.77  |    0.0002 |         2.67  | cross |           0.0051 | cross   |
+|      9 |   64365 |   0.64 | 3.716 |    0.0002 |         2.545 | cross |           0.0051 | cross   |
+|     10 |   71419 |   0.71 | 3.714 |    0.0002 |         2.444 | cross |           0.0051 | cross   |
+|     11 |   78525 |   0.79 | 4.254 |    0      |         2.343 | cross |           0.0009 | cross   |
+|     12 |   85687 |   0.86 | 4.133 |    0      |         2.269 | cross |           0.0009 | cross   |
+|     13 |   92818 |   0.93 | 4.165 |    0      |         2.204 | cross |           0.0009 | cross   |
+|     14 |  100000 |   1    | 4.86  |    0      |         2.135 | cross |           0.0001 | cross   |
+mixture-SPRT mixing scale tau=0.01430 (absolute rate units)
+first crossing -> naive: look 4 | OBF: look 6 | mSPRT: look 5
+
+[6] POWER / PLANNING
+| planning input / output    | value                   |
+|----------------------------|-------------------------|
+| metric                     | conversion (proportion) |
+| baseline                   | 0.137672                |
+| MDE (relative)             | 3.00%                   |
+| MDE (absolute)             | 0.00413015              |
+| alpha / power              | 0.05 / 0.8              |
+| allocation (treat:control) | 1:1                     |
+| variance reduction assumed | 0.0%                    |
+| n per control arm          | 110,620                 |
+| n per treatment arm        | 110,620                 |
+| n total                    | 221,240                 |
+| daily eligible traffic     | 7,143                   |
+| days required              | 31.0                    |
+MDE at the realised sample size (50,112 per arm): 4.48% relative (0.00617 absolute)
+Power against the observed lift: 99.8% raw, 100.0% with the measured CUPED reduction
+
+[7] HETEROGENEOUS TREATMENT EFFECTS (BH FDR q=0.1, 13 hypotheses)
+| dim     | level     |      n |   rate C |   rate T |   abs lift | rel lift   |   lift outside |   inter z |   inter p |      BH p | discovery   |
+|---------|-----------|--------|----------|----------|------------|------------|----------------|-----------|-----------|-----------|-------------|
+| device  | mobile    | 60,210 |   0.1253 |   0.1463 |     0.021  | +16.79%    |        -0.0049 |      5.67 | 1.467e-08 | 1.907e-07 | YES         |
+| device  | desktop   | 29,754 |   0.1631 |   0.1582 |    -0.0049 | -3.03%     |         0.0175 |     -4.51 | 6.504e-06 | 4.228e-05 | YES         |
+| tenure  | loyal     | 19,947 |   0.1863 |   0.2087 |     0.0224 | +12.01%    |         0.008  |      2.36 | 0.01838   | 0.07964   | YES         |
+| device  | tablet    | 10,036 |   0.1364 |   0.1329 |    -0.0036 | -2.60%     |         0.0124 |     -2.21 | 0.02684   | 0.08723   | YES         |
+| tenure  | returning | 39,794 |   0.1454 |   0.1531 |     0.0077 | +5.29%     |         0.0128 |     -1.11 | 0.2662    | 0.5861    | no          |
+| tenure  | new       | 40,259 |   0.1059 |   0.114  |     0.0081 | +7.63%     |         0.0125 |     -1.01 | 0.3112    | 0.5861    | no          |
+| country | UK        | 19,905 |   0.136  |   0.1511 |     0.0151 | +11.07%    |         0.0097 |      0.97 | 0.3342    | 0.5861    | no          |
+| channel | paid      | 34,781 |   0.1225 |   0.1356 |     0.0131 | +10.73%    |         0.0096 |      0.77 | 0.4417    | 0.5861    | no          |
+| channel | referral  | 19,907 |   0.1423 |   0.1496 |     0.0073 | +5.15%     |         0.0116 |     -0.77 | 0.4435    | 0.5861    | no          |
+| country | US        | 49,959 |   0.1477 |   0.1568 |     0.0091 | +6.18%     |         0.0125 |     -0.75 | 0.4508    | 0.5861    | no          |
+| country | IN        |  9,937 |   0.1047 |   0.1139 |     0.0092 | +8.80%     |         0.0111 |     -0.27 | 0.7834    | 0.8741    | no          |
+| country | DE        | 20,199 |   0.1304 |   0.1422 |     0.0118 | +9.04%     |         0.0105 |      0.24 | 0.8068    | 0.8741    | no          |
+uncorrected significant: 4 | survive Benjamini-Hochberg: 4
+
+[8] DECISION
+RECOMMENDATION: SHIP
+  conversion is up +7.82% and the whole interval clears the +2.00% bar worth shipping.
+
+Why:
+  - SRM check PASSED (chi2=0.50, dof=1, p=0.4787 >= 0.001)
+  - conversion: +7.82% relative (+0.010761 absolute), 95% CI [+4.59%, +11.14%], fixed-horizon p=1.18e-06, always-valid p=6.41e-05.
+  - Posterior: P(treatment > control) = 100.00%, expected loss from shipping = 2.49e-10 (0.0000% of control, threshold 0.20%).
+  - Lower confidence bound +4.59% exceeds the practical MDE +2.00%, so even the pessimistic reading is a win.
+  - Expected loss from shipping is below the risk threshold, so the downside tail is affordable.
+  - Secondary revenue_per_user (CUPED): +12.96% (p=2.73e-09, significant).
+  - Segment scan: 4 of 13 interactions survive BH at q=0.1; strongest is device=mobile (lift +0.0210 inside vs -0.0049 outside, BH p=1.91e-07).
+
+Caveats:
+  - Segment findings are exploratory: confirm them in a dedicated follow-up experiment before targeting the rollout.
+
+Plain English:
+  Across 100,000 users, conversion moved from 0.1377 in control to 0.1484 in treatment, a
+  relative change of +7.82%. After 14 interim looks the always-valid p-value is 6.41e-05, so
+  this reading is safe even though the experiment was watched every day. The posterior puts
+  100.0% probability on the treatment being better, and shipping it risks on average 0.000% of
+  the control metric if we are wrong. Because the pessimistic end of the interval (+4.59%) is
+  still above the +2.00% we said was worth the engineering cost, the recommendation is to
+  ship. Worth flagging: Segment findings are exploratory: confirm them in a dedicated follow-
+  up experiment before targeting the rollout.
+================================================================================================
