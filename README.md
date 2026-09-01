@@ -1,45 +1,22 @@
-# SplitForge — Statistical A/B Experiment Engine
+# SplitForge — Statistical A/B Testing Engine with Sequential mSPRT & Dual Inference
 
-> Rigorous experiment analysis without guesswork. SplitForge automates the full statistical lifecycle of A/B tests: hypothesis validation, sample-size projection, sequential testing, frequentist and Bayesian significance, and multi-metric dashboards — so product teams get answers, not spreadsheets.
+SplitForge is a statistical experimentation platform that eliminates common A/B testing pitfalls (peeking bias, underpowered tests, sample ratio mismatches). It provides simultaneous **Frequentist and Bayesian dual inference** alongside **mixture Sequential Probability Ratio Tests (mSPRT)** for continuous experiment monitoring.
 
-## What SplitForge Does
+## Statistical Methodologies
 
-- **Pre-experiment planning** — MDE-based sample size calculator with power curves
-- **Sequential testing** — always-valid p-values via mSPRT; stop early with confidence
-- **Dual inference** — frequentist t-test / chi-square *and* Bayesian Beta-Binomial side by side
-- **Multi-metric reporting** — revenue, conversion, engagement in a single experiment report
-- **Segment drilldown** — detect HTE (heterogeneous treatment effects) per cohort
+1. **Always-Valid Sequential Testing (mSPRT)**: Enables real-time stopping rules without inflating Type I error rates ($p < 0.05$ always valid).
+2. **CUPED Variance Reduction**: Uses pre-experiment covariate data to reduce metric variance by up to $40\%$, cutting required sample sizes almost in half.
+3. **Frequentist + Bayesian Dual View**: Side-by-side $p$-values and posterior distributions $P(	ext{Variant} > 	ext{Control} \mid 	ext{Data})$ for intuitive decision-making.
 
-## Architecture
-
-```
-Experiment Config
-    └─> SplitForge Planner  (power analysis, randomization check)
-    └─> StatEngine          (t-test, Mann-Whitney, Beta-Binomial)
-    └─> SequentialGuard     (mSPRT boundaries, early-stop logic)
-    └─> ReportBuilder       (Markdown + CSV experiment summary)
-```
-
-## Quickstart
+## Usage
 
 ```bash
-python walkthrough.py        # full end-to-end experiment walkthrough
-python tasks.py demo         # quick stats engine demo
+# Run full experimentation walkthrough and Monte Carlo calibration
+python walkthrough.py
 ```
 
-## Test
+## Tests
 
 ```bash
-python tests/test_smoke.py
+pytest tests/ -v
 ```
-
----
-
-## 👤 Author & Contact
-
-- **Author**: Nathaniel Gordon
-- **Role**: Senior AI & Machine Learning Engineer
-- **GitHub**: [github.com/nathaniel-gordon](https://github.com/nathaniel-gordon)
-- **Portfolio / Upwork**: [upwork.com/freelancers/~015fe5a704f8943797](https://www.upwork.com/freelancers/~015fe5a704f8943797)
-- **Email**: nathanielgordon346@gmail.com
-- **Location**: Tallahassee, FL, USA
